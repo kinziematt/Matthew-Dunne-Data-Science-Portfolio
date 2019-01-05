@@ -1,0 +1,57 @@
+1. Get the zip file from /home/kadochnikov/data/BX-CSV-Dump.zip
+cp /home/kadochnikov/data/BX-CSV-Dump.zip /home/dunne/data/
+
+2. Unzip the file
+unzip BX-CSV-Dump.zip
+
+3. Move the files to HDFS
+hdfs dfs -put BX-Book-Ratings.csv BX-Books.csv BX-Users.csv /user/dunne/
+
+4. Reading into Pig
+
+pig -useHCatalog
+#use Hive Catalog
+SET hcat.bin /usr/bin/hcat;
+#register a UDF so you don't worry about writing csv file
+REGISTER /opt/cloudera/parcels/CDH/lib/pig/piggybank.jar
+
+#create the ratings table and store it into Hive
+ratings = LOAD '/user/dunne/BX-Book-Ratings.csv' USING org.apache.pig.piggybank.storage.CSVExcelStorage(';', 'NO_MULTILINE', 'UNIX', 'SKIP_INPUT_HEADER') as (user_id:CHARARRAY, isbn: CHARARRAY, rating:int); 
+#create a hive table for this
+sql drop table dunne.ratings;
+sql create table dunne.ratings (user_id string, isbn string, rating int); 
+STORE ratings INTO 'dunne.ratings' USING org.apache.hive.hcatalog.pig.HCatStorer();
+
+#Do the same for users
+users = LOAD '/user/dunne/BX-Users.csv' USING org.apache.pig.piggybank.storage.CSVExcelStorage(';', 'NO_MULTILINE', 'UNIX', 'SKIP_INPUT_HEADER') as (user_id:CHARARRAY, location: CHARARRAY, age: int);
+sql drop table dunne.users_table;
+sql create table dunne.users_table (user_id string, location string, age int);
+STORE users INTO 'dunne.users_table' USING org.apache.hive.hcatalog.pig.HCatStorer();
+
+#do the same for books
+books = LOAD '/user/dunne/BX-Books.csv' USING org.apache.pig.piggybank.storage.CSVExcelStorage(';', 'NO_MULTILINE', 'UNIX', 'SKIP_INPUT_HEADER') as (isbn: CHARARRAY, book_title:CHARARRAY, book_author:CHARARRAY, year_pub:int, publisher:CHARARRAY, image_url_s:CHARARRAY, image_url_m:CHARARRAY, image_url_l:CHARARRAY); 
+sql drop table dunne.books_table;
+sql create table dunne.book_table (isbn string, book_title string, book_author string, year_pub int, publisher string, image_url_s string, image_url_m string, image_url_l string); 
+STORE books INTO 'dunne.books_table' USING org.apache.hive.hcatalog.pig.HCatStorer();
+
+#you really only need two columns from Users and Ratings in order to get what you want after the join
+new_users = FOREACH users GENERATE UserID, Location;
+new_ratings = FOREACH ratings GENERATE UserID, Rating;
+#then join them on UserID
+joined = JOIN new_users BY UserID, new_ratings BY UserID;
+
+
+C = GROUP joined BY Location;
+D = FOREACH C GENERATE group AS Location, SUM(joined.Rating) AS Book_Rating_Sum, AVG(joined.Rating) AS Book_Rating_Avg, MIN(joined.Rating) AS Book_Rating_Min, MAX(joined.Rating) AS Book_Rating_Max, COUNT(joined.Rating) AS Rec_Num;
+ordered = ORDER D BY Rec_Num DESC;
+
+#remove any existing directory just in case (Pig needs a non-existing directory)
+rmf /user/dunne/Assignment_3
+STORE ordered INTO '/user/dunne/Assignment_3';
+
+#check that it is there
+Ctrl+C
+hdfs dfs -ls /user/dunne/Assignment_3
+
+5. Remove files from LINUX file system.
+rm BX-Book-Ratings.csv BX-Books.csv BX-Users.csv BX-CSV-Dump.zip

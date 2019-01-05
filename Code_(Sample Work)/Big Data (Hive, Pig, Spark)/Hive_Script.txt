@@ -1,0 +1,62 @@
+1. Copy from Nick's Linux directory to yours
+
+mkdir data
+cd /home/kadochnikov/data/
+cp Municipal_Court_Caseload_Information.zip /home/dunne/data/
+
+2. Unzip the file
+
+unzip Municipal_Court_Caseload_Information.zip
+#gets a .csv file and a .zip file
+
+3. Load the file into Hive table
+
+hive
+use dunne;
+#everything should be read as a string. Delimited by comma because it is csv
+create table muni_cases (OFFENSE_TYPE string, OFFENSE_DATE string, OFF_TIME string, OFF_CHARGE_DESC string, OFF_Street string, OFF_Cross_Street_Check string, OFF_Cross_Street string, SCHOOL_ZONE string, CONST_ZONE string, CASE_CLOSED string) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' tblproperties ("skip.header.line.count"="1");
+#see if it worked
+describe muni_cases;
+#Load data from csv file into table
+LOAD DATA LOCAL INPATH '/home/dunne/data/Municipal_Court_Caseload_Information.csv' INTO TABLE muni_cases;
+
+4. Ensure you process the header correctly
+#with tblproperties above you have skipped the header
+
+5. Delete both the zipped file and the CSV file from Linux machine, keeping the file only in HDFS
+#leave Hive
+Ctrl+C
+#remove both files
+rm Municipal_Court_Caseload_Information.csv Municipal_Court_Caseload_Information.zip
+
+6. Calculate frequency of offenses by Offense Case Type
+#write a SQL file called offense_freq.sql on your laptop that says:
+use dunne;
+SELECT offense_type, count(offense_type) as frequency from muni_cases GROUP BY offense_type ORDER BY frequency DESC;
+#upload it to the same place you have the file stored on Linux (USING THE COMMAND PROMPT AND NAVIGATING TO WHERE FILE IS SAVED)
+scp offense_freq.sql dunne@hadoop.rcc.uchicago.edu:/home/dunne/data/
+#run the file to get an output file and an error file
+
+
+7. Identify the most frequent offences by Offence Charge Description (show Offence Charge Description and offence frequency count in descending order)
+#write a SQL file called offence_desc.sql that says:
+use dunne;
+SELECT off_charge_desc, count(off_charge_desc) as frequency from muni_cases GROUP BY off_charge_desc ORDER BY frequency DESC LIMIT 10;
+#upload it to the same place you have the file stored on Linux (USING THE COMMAND PROMPT AND NAVIGATING TO WHERE FILE IS SAVED)
+scp offense_desc.sql dunne@hadoop.rcc.uchicago.edu:/home/dunne/data/
+
+
+8. Your final output/project result can be in any format.
+
+#run the file from Question 6 to get an output file and an error file
+hive -f offense_freq.sql 1>Q6_output 2>Q6_err
+
+#run the file from Question 7 to get an output file and an error file
+hive -f offense_desc.sql 1>Q7_output 2>Q7_err
+
+#download the output files (USING THE COMMAND PROMPT)
+scp dunne@hadoop.rcc.uchicago.edu:/home/dunne/data/Q6_output C:\Users\mjdun\Desktop\Big_Data\Assignments
+scp dunne@hadoop.rcc.uchicago.edu:/home/dunne/data/Q7_output C:\Users\mjdun\Desktop\Big_Data\Assignments
+
+#move both output files to HDFS.
+hdfs dfs -put Q6_output Q7_output /user/dunne/

@@ -1,3 +1,5 @@
+#Course Description
+
 Week by week  
 
 In **week one** you will be introduced to the principles of data visualization. This week’s assignment asks that you carefully read Alberto Cairo's work, Graphics Lies, Misleading Visuals. You will locate and identify a visual that displays misleading information. You will interpret the features of the visual in order to identify the mechanism(s) that is/are used by the "encoder" to mislead the "decoder." For each mechanism that you identify, you will explain how it was used to mislead.  

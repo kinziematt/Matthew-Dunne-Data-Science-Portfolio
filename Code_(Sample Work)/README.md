@@ -1,3 +1,3 @@
-This folder contains work completed as part of courses for my Masters Program as well as for online courses (Coursera). The name of each course is included in the name of the folder as well as the relevant coding script. Each folder also contains a course description.  
+This folder contains work completed as part of courses for my Masters Program as well as for online courses (Coursera). The name of each course is included in the name of the folder along with the relevant coding script. Each folder also contains a course description.  
 
 For ease of viewing the coding assignments are saved as markdown files in pdf. All relevant code is included and is my original work unless otherwise noted.

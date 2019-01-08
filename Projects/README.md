@@ -19,7 +19,7 @@ While this is an improvement, accuracy remains a problem as the region’s popul
 To improve on PMT, the IDB (the largest source of development financing for Latin America and the Caribbean) has turned to the Kaggle community. They believe that new methods beyond traditional econometrics, based on a dataset of Costa Rican household characteristics, might help improve PMT’s performance.  
 
 
-# NLP Project  
+# NLP Project Description  
 
 Illinois is famous for being one of the very few states in the country with negative population growth.  The objective of your final project is to:  
 
@@ -28,6 +28,6 @@ Illinois is famous for being one of the very few states in the country with nega
 
 You have a collection of a couple of months’ worth of news articles in RCC located at: /project/msca/kadochnikov/news/news_chicago_il.pkl  
 
-# Time Series Project  
+# Time Series Project Description  
 
 Shanghai uses an auction system to sell a limited number of license plates to fossil-fuel car buyers every month. The average price of this license plate is about $13,000 and it is often referred to as "the most expensive piece of metal in the world." So, our goal is to predict the avg price or the lowest price for the next month. This Data set will be updated every month constantly.

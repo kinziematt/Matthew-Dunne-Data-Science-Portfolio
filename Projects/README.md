@@ -30,6 +30,6 @@ You have a collection of a couple of months’ worth of news articles in RCC loc
 
 # Time Series Project Description  
 
-This project is based on a Kaggle competition, which is described as follows:  
+This project is based on a **Kaggle competition**, which is described as follows:  
 
 Shanghai uses an auction system to sell a limited number of license plates to fossil-fuel car buyers every month. The average price of this license plate is about $13,000 and it is often referred to as "the most expensive piece of metal in the world." So, our goal is to predict the avg price or the lowest price for the next month. This Data set will be updated every month constantly.
